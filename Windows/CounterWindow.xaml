@@ -1,0 +1,42 @@
+﻿<Window x:Class="DC_SB.Windows.CounterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DC_SB.Windows"
+        mc:Ignorable="d"
+        Title="Counter" ResizeMode="NoResize" ShowInTaskbar="False" 
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Width="350" SizeToContent="Height">
+    <Window.Resources>
+        <Storyboard x:Key="Flash">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" AutoReverse="True" Duration="0:0:0.5" />
+        </Storyboard>
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Name:" />
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="NameField" Margin="5,5,0,5" Text="{Binding Name}" />
+
+        <Label Grid.Row="1" Grid.Column="0" Content="File:" />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="FileLabel" Text="{Binding FileName, Mode=OneWay}" Margin="5,5,0,5" IsReadOnly="True" PreviewMouseDoubleClick="ChooseFile_Click" />
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Count:" />
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="Count" Margin="5,5,0,5" Text="{Binding Count}" IsEnabled="{Binding ValidFile}"/>
+
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
+            <Button Content="Cancel" Height="20" Width="75" Click="Cancel_Click" />
+            <Button Content="OK" Height="20" Width="75" Margin="5,0" Click="Ok_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

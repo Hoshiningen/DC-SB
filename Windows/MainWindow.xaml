@@ -1,0 +1,126 @@
+﻿<Window x:Class="DC_SB.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DC_SB"
+    xmlns:l="clr-namespace:DC_SB.Utils"
+    mc:Ignorable="d"
+    Title="DC+SB" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}" MinHeight="200" MinWidth="216" Icon="/DC-SB;component/Resources/Icons/icon.ico" Loaded="Window_Loaded" Closed="Window_Closed">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVisibility" />
+        <l:InvertBooleanConverter x:Key="invertBooleanConverter" />
+        <l:SizeToVisibility x:Key="sizeToVisibility" />
+        <l:VKeysToString x:Key="vKeysToString" />
+    </Window.Resources>
+    <Grid IsEnabled="{Binding Initialized}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Menu Grid.Row="0" Padding="0,3">
+            <MenuItem Header="Settings" Click="Settings_Click" />
+        </Menu>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding FirstColumnWidth, Mode=TwoWay}" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="{Binding SecondColumnWidth, Mode=TwoWay}" />
+            </Grid.ColumnDefinitions>
+
+            <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="5" />
+
+            <Grid x:Name="countersGrid" Grid.Column="0" IsEnabled="{Binding Path=DisableCounters, Converter={StaticResource invertBooleanConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Counters" />
+
+                <DataGrid Grid.Row="1" x:Name="Counters" AutoGenerateColumns="False" CanUserResizeColumns="True" CanUserReorderColumns="False" 
+                          CanUserSortColumns="False" SelectionMode="Single" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False"
+                          SelectionUnit="FullRow" HeadersVisibility="Column" HorizontalScrollBarVisibility="Disabled" Margin="5,0" ItemsSource="{Binding Counters}"
+                          SelectedItem="{Binding SelectedCounter, Mode=TwoWay}">
+                    <DataGrid.ItemContainerStyle>
+                        <Style TargetType="DataGridRow">
+                            <EventSetter Event="MouseDoubleClick" Handler="Counters_DoubleClick" />
+                        </Style>
+                    </DataGrid.ItemContainerStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=Name}" />
+                        <DataGridTextColumn Header="Count" IsReadOnly="True" Binding="{Binding Path=Count}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ActualWidth, ElementName=countersGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=195}">
+                    <Button Content="Add" Width="60" Margin="5,5,0,5" Click="AddCounter_Click" />
+                    <Button Content="Remove" Width="60" Margin="5" Click="RemoveCounter_Click" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ActualWidth, ElementName=countersGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=65}">
+                    <Button Content="-" Width="25" Margin="5" Click="Minus_Click" />
+                    <Button Content="+" Width="25" Margin="0,5,5,5" Click="Plus_Click" />
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="soundsGrid" Grid.Column="2" IsEnabled="{Binding Path=DisableSounds, Converter={StaticResource invertBooleanConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Grid.Column="0" Content="Sounds" />
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Margin="5,0"
+                                Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=165}">
+                        <Image Grid.Column="1" Height="10" Width="10" Margin="5">
+                            <Image.Source>
+                                <BitmapImage UriSource="/DC-SB;component/Resources/Icons/volume.png" />
+                            </Image.Source>
+                        </Image>
+                        <Slider Grid.Column="2" Width="100" Maximum="100" Minimum="0" AutoToolTipPlacement="BottomRight"
+                                IsMoveToPointEnabled="True" Value="{Binding Volume, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
+
+                <DataGrid Grid.Row="1" x:Name="Sounds" AutoGenerateColumns="False" CanUserResizeColumns="True" CanUserReorderColumns="False"
+                          CanUserSortColumns="False" SelectionMode="Single" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" 
+                          SelectionUnit="FullRow" HeadersVisibility="Column" HorizontalScrollBarVisibility="Disabled" Margin="5,0" ItemsSource="{Binding Sounds}"
+                          SelectedItem="{Binding SelectedSound, Mode=TwoWay}">
+                    <DataGrid.ItemContainerStyle>
+                        <Style TargetType="DataGridRow">
+                            <EventSetter Event="MouseDoubleClick" Handler="Sounds_DoubleClick" />
+                        </Style>
+                    </DataGrid.ItemContainerStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Path=Name}" />
+                        <DataGridTextColumn Header="Key" IsReadOnly="True" Binding="{Binding Path=Keys, Converter={StaticResource vKeysToString}}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=195}">
+                    <Button Content="Add" Width="60" Margin="5,5,0,5" Click="AddSound_Click" />
+                    <Button Content="Remove" Width="60" Margin="5" Click="RemoveSound_Click" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=65}">
+                    <Button Grid.Column="3" Width="25" Margin="5" Click="Play_Click" >
+                        <Image  Width="8" Height="8" Source="/DC-SB;component/Resources/Icons/play.png" />
+                    </Button>
+                    <Button Grid.Column="4" Width="25" Margin="0,5,5,5" Click="Pause_Click" >
+                        <Image Width="8" Height="8" Source="/DC-SB;component/Resources/Icons/stop.png" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

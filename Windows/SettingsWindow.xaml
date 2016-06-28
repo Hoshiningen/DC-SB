@@ -1,0 +1,96 @@
+﻿<Window x:Class="DC_SB.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DC_SB.Windows"
+        xmlns:l="clr-namespace:DC_SB.Utils"
+        mc:Ignorable="d"
+        Title="Settings" Height="300" Width="300" MinHeight="300" MinWidth="300" WindowStartupLocation="CenterOwner" 
+        Icon="/DC-SB;component/Resources/Icons/settings.png" ShowInTaskbar="False" Closing="Window_Closing">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVisibility" />
+        <l:PlayerToWMP x:Key="playerToWMP" />
+        <l:PlayerToNAudio x:Key="playerToNAudio" />
+        <l:VKeysToString x:Key="vKeysToString" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl x:Name="tabControl" Margin="5">
+            <TabItem Header="Key Bindings">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <GroupBox Header="Counters">
+                            <DataGrid ItemsSource="{Binding Path=KeyBindingsCounters, Mode=TwoWay}" AutoGenerateColumns="False" BorderBrush="{x:Null}" Background="{x:Null}" 
+                                    HeadersVisibility="None" GridLinesVisibility="None" SelectionMode="Single" HorizontalScrollBarVisibility="Disabled" IsReadOnly="True" MouseDown="KeyBinding_MouseDown">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Width="80" Binding="{Binding Path=Name}" />
+                                    <DataGridTextColumn Width="*" Binding="{Binding Path=Keys, Converter={StaticResource vKeysToString}}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        
+                        <GroupBox Header="Sounds">
+                            <DataGrid ItemsSource="{Binding Path=KeyBindingsSounds, Mode=TwoWay}" AutoGenerateColumns="False" BorderBrush="{x:Null}" Background="{x:Null}" 
+                                    HeadersVisibility="None" GridLinesVisibility="None" SelectionMode="Single" HorizontalScrollBarVisibility="Disabled" IsReadOnly="True" MouseDown="KeyBinding_MouseDown">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Width="80" Binding="{Binding Path=Name}" />
+                                    <DataGridTextColumn Width="*" Binding="{Binding Path=Keys, Converter={StaticResource vKeysToString}}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Sound">
+                <StackPanel>
+                    <GroupBox Header="Player Library">
+                        <StackPanel>
+                            <RadioButton Name="wMP" Content="WMP" IsChecked="{Binding Path=PlayerLib, Converter={StaticResource playerToWMP}}" IsEnabled="{Binding Path=WMPLibrary}" />
+                            <RadioButton Name="nAudio" Content="NAudio" IsChecked="{Binding Path=PlayerLib, Converter={StaticResource playerToNAudio}}" />
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Output Device">
+                        <StackPanel>
+                            <ComboBox x:Name="DevicesDDL" Visibility="{Binding IsChecked, ElementName=nAudio, Converter={StaticResource boolToVisibility}}" ItemsSource="{Binding DevicesList}" SelectedIndex="{Binding Device, Mode=TwoWay}" />
+                            <ComboBox IsEnabled="False" Visibility="{Binding IsChecked, ElementName=wMP, Converter={StaticResource boolToVisibility}}" SelectedIndex="0" ToolTip="Changing Output Device is allowed only with NAudio" ToolTipService.ShowOnDisabled="True">
+                                <ComboBoxItem>Default Output Device</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Other">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <GroupBox Header="Disable" >
+                            <StackPanel>
+                                <CheckBox Content="Counters" IsChecked="{Binding Path=DisableCounters}" />
+                                <CheckBox Content="Sounds" IsChecked="{Binding Path=DisableSounds}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Other" >
+                            <StackPanel>
+                                <CheckBox Content="Closing should minimize app to the tray" IsEnabled="False" IsChecked="{Binding Path=Tray}" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button x:Name="buttonOk" Content="OK" Margin="0,0,5,5" Width="75" Click="buttonOk_Click" />
+            <Button x:Name="buttonClose" Content="Close" Margin="0,0,5,5" Width="75" Click="buttonClose_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
