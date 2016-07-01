@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DC_SB.Windows"
         mc:Ignorable="d"
         Title="Counter" ResizeMode="NoResize" ShowInTaskbar="False" 
-        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Width="350" SizeToContent="Height">
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Width="500" SizeToContent="Height">
     <Window.Resources>
         <Storyboard x:Key="Flash">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" AutoReverse="True" Duration="0:0:0.5" />
@@ -26,13 +26,13 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Name:" />
-        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="NameField" Margin="5,5,0,5" Text="{Binding Name}" />
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="NameField" Margin="5,5,0,5" Text="{Binding Name}" HorizontalScrollBarVisibility="Auto" />
 
         <Label Grid.Row="1" Grid.Column="0" Content="File:" />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="FileLabel" Text="{Binding FileName, Mode=OneWay}" Margin="5,5,0,5" IsReadOnly="True" PreviewMouseDoubleClick="ChooseFile_Click" />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="FileLabel" Text="{Binding FilePath, Mode=OneWay}" Margin="5,5,0,5" IsReadOnly="True" PreviewMouseDoubleClick="ChooseFile_Click" HorizontalScrollBarVisibility="Auto" />
 
         <Label Grid.Row="2" Grid.Column="0" Content="Count:" />
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="Count" Margin="5,5,0,5" Text="{Binding Count}" IsEnabled="{Binding ValidFile}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="Count" Margin="5,5,0,5" Text="{Binding Count}" IsEnabled="{Binding ValidFile}" HorizontalScrollBarVisibility="Auto" />
 
         <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Content="Cancel" Height="20" Width="75" Click="Cancel_Click" />

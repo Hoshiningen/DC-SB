@@ -7,7 +7,7 @@
         xmlns:l="clr-namespace:DC_SB.Utils"
         mc:Ignorable="d"
         Title="Settings" Height="300" Width="300" MinHeight="300" MinWidth="300" WindowStartupLocation="CenterOwner" 
-        Icon="/DC-SB;component/Resources/Icons/settings.png" ShowInTaskbar="False" Closing="Window_Closing">
+        Icon="/DC+SB;component/Resources/Icons/settings.png" ShowInTaskbar="False" Closing="Window_Closing">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="boolToVisibility" />
         <l:PlayerToWMP x:Key="playerToWMP" />
@@ -75,12 +75,6 @@
                             <StackPanel>
                                 <CheckBox Content="Counters" IsChecked="{Binding Path=DisableCounters}" />
                                 <CheckBox Content="Sounds" IsChecked="{Binding Path=DisableSounds}" />
-                            </StackPanel>
-                        </GroupBox>
-
-                        <GroupBox Header="Other" >
-                            <StackPanel>
-                                <CheckBox Content="Closing should minimize app to the tray" IsEnabled="False" IsChecked="{Binding Path=Tray}" />
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>

@@ -176,7 +176,7 @@ namespace DC_SB
             logic.Pause();
         }
 
-        private void Window_Closed(object sender, System.EventArgs e)
+        private void Window_Closing(object sender, System.EventArgs e)
         {
             settings.Save();
         }

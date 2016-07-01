@@ -103,6 +103,7 @@ namespace DC_SB.Utils
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var separator = parameter as string;
+            if (separator == "new line") separator = "\n";
             var list = value as List<string>;
             if (separator == null || list == null)
             {

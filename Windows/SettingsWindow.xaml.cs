@@ -79,7 +79,6 @@ namespace DC_SB.Windows
         {
             oldSettings = newSettings;
             DialogResult = true;
-            //implement real saving
         }
     }
 }

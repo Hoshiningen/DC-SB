@@ -9,7 +9,6 @@ namespace DC_SB.Utils
 {
     public class Sound : INotifyPropertyChanged
     {
-        public const string DEFAULT_FILENAME = "No File Chosen";
         public List<string> FileNames { get; private set; }
 
         private string name;
@@ -34,9 +33,10 @@ namespace DC_SB.Utils
                 FileNames.Clear();
                 foreach (string filePath in filePaths)
                 {
-                    if (!File.Exists(filePath)) ErrorHandler.Raise("File {0} could not be found.", filePath);
                     FileNames.Add(Path.GetFileName(filePath));
+                    if (!IniFile.Portable && !File.Exists(filePath)) ErrorHandler.Raise("File {0} could not be found.", filePath);
                 }
+                OnPropertyChanged("FilePaths");
                 OnPropertyChanged("FileNames");
             }
         }
@@ -54,17 +54,16 @@ namespace DC_SB.Utils
         public Sound()
         {
             FileNames = new List<string>();
-            FilePaths = new List<string>();
-            Keys = new ObservableCollection<Input.VKeys>();
-            FileNames.Add(DEFAULT_FILENAME);
+            filePaths = new List<string>();
+            keys = new ObservableCollection<Input.VKeys>();
         }
 
         public Sound(Sound sound)
         {
-            Name = sound.Name;
+            name = sound.Name;
             FileNames = new List<string>();
-            FilePaths = new List<string>(sound.FilePaths);
-            Keys = new ObservableCollection<Input.VKeys>(sound.Keys);
+            filePaths = new List<string>(sound.FilePaths);
+            keys = new ObservableCollection<Input.VKeys>(sound.Keys);
         }
 
         public Sound(string name, List<string> filePaths, ObservableCollection<Input.VKeys> keys)

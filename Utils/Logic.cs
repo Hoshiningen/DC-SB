@@ -1,8 +1,6 @@
-﻿using DC_SB.Utils.Players;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using System.Linq;
 using System.IO;
 
@@ -53,25 +51,19 @@ namespace DC_SB.Utils
                                 Settings.SelectedCounter = Settings.Counters[newIndex];
                                 break;
                             case "Up":
+                                if (index == -1) break;
                                 counter = Settings.Counters[index];
-                                if (File.Exists(counter.FilePath))
-                                {
-                                    if (index != -1) counter.Count++;
-                                }
+                                counter.Count++;
                                 break;
                             case "Down":
+                                if (index == -1) break;
                                 counter = Settings.Counters[index];
-                                if (File.Exists(counter.FilePath))
-                                {
-                                    if (index != -1) counter.Count--;
-                                }
+                                counter.Count--;
                                 break;
                             case "Reset":
+                                if (index == -1) break;
                                 counter = Settings.Counters[index];
-                                if (File.Exists(counter.FilePath))
-                                {
-                                    if (index != -1) counter.Count = 0;
-                                }
+                                counter.Count = 0;
                                 break;
                         }
                     }

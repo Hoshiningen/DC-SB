@@ -6,7 +6,8 @@
     xmlns:local="clr-namespace:DC_SB"
     xmlns:l="clr-namespace:DC_SB.Utils"
     mc:Ignorable="d"
-    Title="DC+SB" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}" MinHeight="200" MinWidth="216" Icon="/DC-SB;component/Resources/Icons/icon.ico" Loaded="Window_Loaded" Closed="Window_Closed">
+    Title="DC+SB" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}" MinHeight="200" 
+    MinWidth="216" Icon="/DC+SB;component/Resources/Icons/icon.ico" Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="boolToVisibility" />
         <l:InvertBooleanConverter x:Key="invertBooleanConverter" />
@@ -85,7 +86,7 @@
                                 Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=165}">
                         <Image Grid.Column="1" Height="10" Width="10" Margin="5">
                             <Image.Source>
-                                <BitmapImage UriSource="/DC-SB;component/Resources/Icons/volume.png" />
+                                <BitmapImage UriSource="/DC+SB;component/Resources/Icons/volume.png" />
                             </Image.Source>
                         </Image>
                         <Slider Grid.Column="2" Width="100" Maximum="100" Minimum="0" AutoToolTipPlacement="BottomRight"
@@ -114,10 +115,10 @@
                 </StackPanel>
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=65}">
                     <Button Grid.Column="3" Width="25" Margin="5" Click="Play_Click" >
-                        <Image  Width="8" Height="8" Source="/DC-SB;component/Resources/Icons/play.png" />
+                        <Image  Width="8" Height="8" Source="/DC+SB;component/Resources/Icons/play.png" />
                     </Button>
                     <Button Grid.Column="4" Width="25" Margin="0,5,5,5" Click="Pause_Click" >
-                        <Image Width="8" Height="8" Source="/DC-SB;component/Resources/Icons/stop.png" />
+                        <Image Width="8" Height="8" Source="/DC+SB;component/Resources/Icons/stop.png" />
                     </Button>
                 </StackPanel>
             </Grid>

@@ -1,13 +1,11 @@
 ﻿using Microsoft.Win32;
 using System.ComponentModel;
 using System.IO;
-using System.Windows;
 
 namespace DC_SB.Utils
 {
     public class Counter : INotifyPropertyChanged
     {
-        public const string DEFAULT_FILENAME = "No File Chosen";
         public string FileName { get; private set; }
         public bool ValidFile { get; private set; }
 
@@ -29,40 +27,37 @@ namespace DC_SB.Utils
             get { return filePath; }
             set
             {
-                if (File.Exists(value))
+                FileName = Path.GetFileName(value);
+                filePath = value;
+                if (File.Exists(filePath))
                 {
-                    string content = File.ReadAllText(value);
-                    filePath = value;
+                    string content = File.ReadAllText(filePath);
                     long number;
                     if (content == "")
                     {
                         ValidFile = true;
                         Count = 0;
-                        FileName = Path.GetFileName(filePath);
-                        OnPropertyChanged("FileName");
-                        OnPropertyChanged("ValidFile");
+                        
                     }
                     else if (long.TryParse(content, out number))
                     {
                         ValidFile = true;
                         Count = number;
-                        FileName = Path.GetFileName(filePath);
-                        OnPropertyChanged("FileName");
-                        OnPropertyChanged("ValidFile");
                     }
                     else
                     {
                         ValidFile = false;
-                        OnPropertyChanged("ValidFile");
-                        ErrorHandler.Raise("File {0} of counter {1} has unexpected content.", value, Name);
+                        ErrorHandler.Raise("File {0} of counter {1} has unexpected content.", filePath, Name);
                     }
                 }
                 else
                 {
                     ValidFile = false;
-                    OnPropertyChanged("ValidFile");
-                    ErrorHandler.Raise("File {0} of counter {1} could not be found.", value, Name);
+                    ErrorHandler.Raise("File {0} of counter {1} could not be found.", filePath, Name);
                 }
+                OnPropertyChanged("FileName");
+                OnPropertyChanged("FilePath");
+                OnPropertyChanged("ValidFile");
             }
         }
 
@@ -87,13 +82,14 @@ namespace DC_SB.Utils
 
         public Counter()
         {
-            FileName = DEFAULT_FILENAME;
         }
 
         public Counter(Counter counter)
         {
-            Name = counter.Name;
-            FilePath = counter.FilePath;
+            name = counter.Name;
+            filePath = counter.FilePath;
+            count = counter.Count;
+            ValidFile = counter.ValidFile;
         }
 
         public Counter(string name, string filePath)

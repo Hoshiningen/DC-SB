@@ -7,7 +7,7 @@
         xmlns:l="clr-namespace:DC_SB.Utils"
         mc:Ignorable="d"
         Title="Sound" ResizeMode="NoResize" ShowInTaskbar="False" 
-        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Width="350" SizeToContent="Height">
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Width="500" SizeToContent="Height">
     <Window.Resources>
         <Storyboard x:Key="Flash">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" AutoReverse="True" Duration="0:0:0.5" />
@@ -29,15 +29,16 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Name:" />
-        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="NameField" Margin="5,5,0,5" Text="{Binding Name}" />
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="NameField" Margin="5,5,0,5" Text="{Binding Name}" HorizontalScrollBarVisibility="Auto" />
 
         <Label Grid.Row="1" Grid.Column="0" Content="File/s:" />
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="FileLabel" IsReadOnly="True" Margin="5,5,0,5" PreviewMouseDoubleClick="ChooseFile_Click"
-                 Text="{Binding FileNames, Converter={StaticResource listOfStringsToString}, ConverterParameter=', ', Mode=OneWay}" />
+                 Text="{Binding FilePaths, Converter={StaticResource listOfStringsToString}, ConverterParameter='new line', Mode=OneWay}" 
+                 AcceptsReturn="True" MaxHeight="250" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
 
         <Label Grid.Row="2" Grid.Column="0" Content="Key/s:" />
         <TextBox Grid.Row="2" Grid.Column="1" x:Name="KeyField" Margin="5,5,0,5" IsReadOnly="True" PreviewMouseDoubleClick="BindKey_Click"
-                 Text="{Binding Keys, Converter={StaticResource vKeysToString}, Mode=OneWay}" />
+                 Text="{Binding Keys, Converter={StaticResource vKeysToString}, Mode=OneWay}" HorizontalScrollBarVisibility="Auto" />
 
         <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Content="Cancel" Height="20" Width="75" Click="Cancel_Click" />

@@ -1,5 +1,7 @@
 ﻿using DC_SB.Utils;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace DC_SB.Windows
@@ -51,18 +53,12 @@ namespace DC_SB.Windows
                 Storyboard flash = FindResource("Flash") as Storyboard;
                 if (flash != null)
                 {
-                    if (sound.Name == null || sound.Name.Trim() == "")
-                    {
-                        NameField.BeginStoryboard(flash);
-                    }
-                    if (sound.FileNames.Count == 1 && sound.FileNames[0] == Counter.DEFAULT_FILENAME)
-                    {
-                        FileLabel.BeginStoryboard(flash);
-                    }
-                    if (sound.Keys.Count == 0)
-                    {
-                        KeyField.BeginStoryboard(flash);
-                    }
+                    List<TextBox> toFlash = new List<TextBox>();
+                    if (sound.Name == null || sound.Name.Trim() == "") toFlash.Add(NameField);
+                    if (sound.FileNames.Count == 0) toFlash.Add(FileLabel);
+                    if (sound.Keys.Count == 0) toFlash.Add(KeyField);
+                    if (toFlash.Count == 0) toFlash.Add(FileLabel);
+                    foreach (TextBox textBox in toFlash) textBox.BeginStoryboard(flash);
                 }
             }
         }

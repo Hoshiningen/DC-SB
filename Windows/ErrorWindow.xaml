@@ -12,7 +12,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <ScrollViewer>
-            <RichTextBox>
+            <RichTextBox IsReadOnly="True">
                 <FlowDocument>
                     <Paragraph>
                         <Run x:Name="Text"/>

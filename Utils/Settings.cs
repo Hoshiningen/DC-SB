@@ -13,7 +13,6 @@ namespace DC_SB.Utils
         public const int WMP = 0;
         public const int NAUDIO = 1;
 
-        private IniFile configFile;
         public IPlayer Player { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -23,8 +22,26 @@ namespace DC_SB.Utils
         }
 
         #region Bindable properties
-        public ObservableCollection<Counter> Counters { get; private set; }
-        public ObservableCollection<Sound> Sounds { get; private set; }
+        private ObservableCollection<Counter> counters;
+        public ObservableCollection<Counter> Counters
+        {
+            get { return counters; }
+            private set
+            {
+                counters = value;
+                OnPropertyChanged("Counters");
+            }
+        }
+        private ObservableCollection<Sound> sounds;
+        public ObservableCollection<Sound> Sounds
+        {
+            get { return sounds; }
+            private set
+            {
+                sounds = value;
+                OnPropertyChanged("Sounds");
+            }
+        }
         private List<KeyPrompt> keyBindingsCounters;
         public List<KeyPrompt> KeyBindingsCounters
         {
@@ -104,16 +121,6 @@ namespace DC_SB.Utils
             {
                 disableSounds = value;
                 OnPropertyChanged("DisableSounds");
-            }
-        }
-        private bool tray { get; set; }
-        public bool Tray
-        {
-            get { return tray; }
-            set
-            {
-                tray = value;
-                OnPropertyChanged("Tray");
             }
         }
         private List<OutputDevice> devicesList;
@@ -220,15 +227,10 @@ namespace DC_SB.Utils
         #region Constructors
         public Settings()
         {
-            //if (IniFile.IsPortableOn()) configFile = new IniFile(IniFile.PORTABLE_CONFIG_PATH);
-            if (IniFile.Exists(IniFile.DEFAULT_CONFIG_PATH)) configFile = new IniFile(IniFile.DEFAULT_CONFIG_PATH);
-            else if (IniFile.Exists(IniFile.OLD_CONFIG_PATH)) configFile = new IniFile(IniFile.OLD_CONFIG_PATH);
-            else configFile = new IniFile(IniFile.DEFAULT_CONFIG_PATH);
-
             LoadSettings();
             LoadItems();
 
-            configFile = new IniFile(IniFile.DEFAULT_CONFIG_PATH);
+            if (IniFile.FilePath == IniFile.OLD_CONFIG_PATH) IniFile.FilePath = IniFile.DEFAULT_CONFIG_PATH;
             Initialized = true;
         }
 
@@ -236,7 +238,6 @@ namespace DC_SB.Utils
         {
             Counters = settings.Counters;
             Sounds = settings.Sounds;
-            configFile = settings.configFile;
             volume = settings.Volume;
             device = settings.Device;
             playerLib = settings.PlayerLib;
@@ -245,7 +246,6 @@ namespace DC_SB.Utils
             DevicesList = OutputDevice.GetDevices();
             DisableCounters = settings.DisableCounters;
             DisableSounds = settings.DisableSounds;
-            Tray = settings.Tray;
             WindowHeight = settings.WindowHeight;
             WindowWidth = settings.WindowWidth;
             SplitterPosition = settings.SplitterPosition;
@@ -272,7 +272,7 @@ namespace DC_SB.Utils
             Sounds = new ObservableCollection<Sound>();
             Counters = new ObservableCollection<Counter>();
 
-            tmp = configFile.IniReadValue("Size", "form");
+            tmp = IniFile.IniReadValue("Size", "form");
             if (tmp != null)
             {
                 try
@@ -288,7 +288,7 @@ namespace DC_SB.Utils
                 }
             }
 
-            tmp = configFile.IniReadValue("Size", "split");
+            tmp = IniFile.IniReadValue("Size", "split");
             if (tmp != null) SplitterPosition = double.Parse(tmp);
 
             try
@@ -303,52 +303,54 @@ namespace DC_SB.Utils
 
             DevicesList = OutputDevice.GetDevices();
 
-            tmp = configFile.IniReadValue("Sounds", "device");
+            tmp = IniFile.IniReadValue("Sounds", "device");
             device = OutputDevice.GetDeviceNumber(tmp);
 
-            tmp = configFile.IniReadValue("Sounds", "volume");
+            tmp = IniFile.IniReadValue("Sounds", "volume");
             try { volume = int.Parse(tmp); }
             catch { volume = 30; }
 
-            tmp = configFile.IniReadValue("Sounds", "player");
+            tmp = IniFile.IniReadValue("Sounds", "player");
             if (WMPLibrary && tmp == WMP.ToString()) PlayerLib = WMP;
             else PlayerLib = NAUDIO;
 
-            tmp = configFile.IniReadValue("Settings", "counters_disable");
+            tmp = IniFile.IniReadValue("Settings", "counters_disable");
             try { DisableCounters = bool.Parse(tmp); }
             catch { }
 
-            tmp = configFile.IniReadValue("Settings", "sounds_disable");
+            tmp = IniFile.IniReadValue("Settings", "sounds_disable");
             try { DisableSounds = bool.Parse(tmp); }
             catch { }
 
             keyBindingsCounters = new List<KeyPrompt>();
             keyBindingsSounds = new List<KeyPrompt>();
 
-            keyBindingsCounters.Add(new KeyPrompt("Next", configFile.IniReadValue("Settings", "Next")));
-            keyBindingsCounters.Add(new KeyPrompt("Previous", configFile.IniReadValue("Settings", "Previous")));
-            keyBindingsCounters.Add(new KeyPrompt("Up", configFile.IniReadValue("Settings", "Up")));
-            keyBindingsCounters.Add(new KeyPrompt("Down", configFile.IniReadValue("Settings", "Down")));
-            keyBindingsCounters.Add(new KeyPrompt("Reset", configFile.IniReadValue("Settings", "Reset")));
-            keyBindingsSounds.Add(new KeyPrompt("Pause", configFile.IniReadValue("Settings", "Pause")));
-            keyBindingsSounds.Add(new KeyPrompt("Continue", configFile.IniReadValue("Settings", "Continue")));
+            keyBindingsCounters.Add(new KeyPrompt("Next", IniFile.IniReadValue("Settings", "Next")));
+            keyBindingsCounters.Add(new KeyPrompt("Previous", IniFile.IniReadValue("Settings", "Previous")));
+            keyBindingsCounters.Add(new KeyPrompt("Up", IniFile.IniReadValue("Settings", "Up")));
+            keyBindingsCounters.Add(new KeyPrompt("Down", IniFile.IniReadValue("Settings", "Down")));
+            keyBindingsCounters.Add(new KeyPrompt("Reset", IniFile.IniReadValue("Settings", "Reset")));
+            keyBindingsSounds.Add(new KeyPrompt("Pause", IniFile.IniReadValue("Settings", "Pause")));
+            keyBindingsSounds.Add(new KeyPrompt("Continue", IniFile.IniReadValue("Settings", "Continue")));
         }
 
         private void LoadItems()
         {
             int index = 1;
-            string tmp = configFile.IniReadValue("Counters", "Log" + index);
-            while (tmp != null)
+            string tmp = IniFile.IniReadValue("Counters", "Log" + index);
+            while (tmp != null && tmp.Trim() != "")
             {
                 var splitted = tmp.Split('\t');
-                Counters.Add(new Counter(splitted[0], splitted[1]));
+                var name = splitted[0];
+                string filePath = splitted[1];
+                Counters.Add(new Counter(name, filePath));
                 index++;
-                tmp = configFile.IniReadValue("Counters", "Log" + index);
+                tmp = IniFile.IniReadValue("Counters", "Log" + index);
             }
 
             index = 1;
-            tmp = configFile.IniReadValue("Sounds", "Log" + index);
-            while (tmp != null)
+            tmp = IniFile.IniReadValue("Sounds", "Log" + index);
+            while (tmp != null && tmp.Trim() != "")
             {
                 var splitted = tmp.Split('\t');
 
@@ -356,23 +358,25 @@ namespace DC_SB.Utils
 
                 var filePaths = new List<string>();
                 var files = splitted[1].Split(new string[] { " |" }, StringSplitOptions.RemoveEmptyEntries);
-                filePaths.Add(files[0]);
-                var dirName = Path.GetDirectoryName(files[0]);
+
+                string dirName = Path.GetDirectoryName(files[0]);
+                filePaths.Add(files[0]);               
                 for (int i = 1; i < files.Length; i++)
                 {
                     filePaths.Add(Path.Combine(dirName, files[i]));
                 }
 
                 var keys = new ObservableCollection<Input.VKeys>();
-                var keyNames = splitted[2].Split(new string[] { " + " }, StringSplitOptions.RemoveEmptyEntries);
+                var keyNames = splitted[2].Replace("Choose another file | ", "").Split(new string[] { " + " }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string key in keyNames)
                 {
-                    keys.Add((Input.VKeys)Enum.Parse(typeof(Input.VKeys), key));
+                    Input.VKeys vKey;
+                    if (Enum.TryParse(key, out vKey)) keys.Add(vKey);
                 }
 
                 Sounds.Add(new Sound(name, filePaths, keys));
                 index++;
-                tmp = configFile.IniReadValue("Sounds", "Log" + index);
+                tmp = IniFile.IniReadValue("Sounds", "Log" + index);
             }
         }
         #endregion
@@ -382,54 +386,68 @@ namespace DC_SB.Utils
         {
             if (Initialized)
             {
-                configFile.IniWriteValue("Size", "form", string.Format("{0}\t{1}", WindowWidth, WindowHeight));
-                configFile.IniWriteValue("Size", "split", SplitterPosition.ToString());
-                configFile.IniWriteValue("Sounds", "device", DevicesList[Device].Name);
-                configFile.IniWriteValue("Sounds", "player", PlayerLib.ToString());
-                configFile.IniWriteValue("Sounds", "volume", Volume.ToString());
-                configFile.IniWriteValue("Settings", "counters_disable", DisableCounters.ToString());
-                configFile.IniWriteValue("Settings", "sounds_disable", DisableSounds.ToString());
+                IniFile.IniWriteValue("Size", "form", string.Format("{0}\t{1}", WindowWidth, WindowHeight));
+                IniFile.IniWriteValue("Size", "split", SplitterPosition.ToString());
+                IniFile.IniWriteValue("Sounds", "device", DevicesList[Device].Name);
+                IniFile.IniWriteValue("Sounds", "player", PlayerLib.ToString());
+                IniFile.IniWriteValue("Sounds", "volume", Volume.ToString());
+                IniFile.IniWriteValue("Settings", "counters_disable", DisableCounters.ToString());
+                IniFile.IniWriteValue("Settings", "sounds_disable", DisableSounds.ToString());
 
                 foreach (KeyPrompt keyPrompt in keyBindingsCounters)
                 {
-                    configFile.IniWriteValue("Settings", keyPrompt.Name, (string)new VKeysToString().Convert(keyPrompt.Keys, null, null, null));
+                    IniFile.IniWriteValue("Settings", keyPrompt.Name, (string)new VKeysToString().Convert(keyPrompt.Keys, null, null, null));
                 }
 
                 foreach (KeyPrompt keyPrompt in keyBindingsSounds)
                 {
-                    configFile.IniWriteValue("Settings", keyPrompt.Name, (string)new VKeysToString().Convert(keyPrompt.Keys, null, null, null));
+                    IniFile.IniWriteValue("Settings", keyPrompt.Name, (string)new VKeysToString().Convert(keyPrompt.Keys, null, null, null));
                 }
 
                 int index = 1;
-                string tmp = configFile.IniReadValue("Counters", "Log" + index);
+                string tmp = IniFile.IniReadValue("Counters", "Log" + index);
                 while (tmp != null)
                 {
-                    configFile.IniWriteValue("Counters", "Log" + index, "");
+                    IniFile.IniWriteValue("Counters", "Log" + index, "");
                     index++;
-                    tmp = configFile.IniReadValue("Counters", "Log" + index);
+                    tmp = IniFile.IniReadValue("Counters", "Log" + index);
                 }
 
                 index = 1;
-                tmp = configFile.IniReadValue("Sounds", "Log" + index);
+                tmp = IniFile.IniReadValue("Sounds", "Log" + index);
                 while (tmp != null)
                 {
-                    configFile.IniWriteValue("Sounds", "Log" + index, "");
+                    IniFile.IniWriteValue("Sounds", "Log" + index, "");
                     index++;
-                    tmp = configFile.IniReadValue("Sounds", "Log" + index);
+                    tmp = IniFile.IniReadValue("Sounds", "Log" + index);
                 }
 
                 for (int i = 0; i < Counters.Count; i++)
                 {
                     var counter = Counters[i];
-                    configFile.IniWriteValue("Counters", "Log" + (i + 1), string.Format("{0}\t{1}", counter.Name, counter.FilePath));
+                    string filePath = counter.FilePath;
+                    if (IniFile.Portable) filePath = counter.FileName;
+                    IniFile.IniWriteValue("Counters", "Log" + (i + 1), string.Format("{0}\t{1}", counter.Name, filePath));
                 }
 
                 for (int i = 0; i < Sounds.Count; i++)
                 {
                     var sound = Sounds[i];
 
-                    string filePaths = sound.FilePaths[0];
-                    for (int j = 1; j < sound.FilePaths.Count; j++)
+                    int startIndex;
+                    string filePaths;
+                    if (IniFile.Portable)
+                    {
+                        filePaths = "";
+                        startIndex = 0;
+                    }
+                    else
+                    {
+                        filePaths = sound.FilePaths[0];
+                        startIndex = 1;
+                    }
+
+                    for (int j = startIndex; j < sound.FilePaths.Count; j++)
                     {
                         filePaths += " |" + Path.GetFileName(sound.FilePaths[j]);
                     }
@@ -437,10 +455,10 @@ namespace DC_SB.Utils
                     string keys = sound.Keys[0].ToString();
                     for (int j = 1; j < sound.Keys.Count; j++)
                     {
-                        filePaths += " + " + sound.Keys[j];
+                        keys += " + " + sound.Keys[j];
                     }
 
-                    configFile.IniWriteValue("Sounds", "Log" + (i + 1), string.Format("{0}\t{1}\t{2}", sound.Name, filePaths, keys));
+                    IniFile.IniWriteValue("Sounds", "Log" + (i + 1), string.Format("{0}\t{1}\t{2}", sound.Name, filePaths, keys));
                 }
             }
         }
@@ -457,7 +475,6 @@ namespace DC_SB.Utils
             if (x.Device != y.Device) return false;
             if (x.DisableCounters != y.DisableCounters) return false;
             if (x.DisableSounds != y.DisableSounds) return false;
-            if (x.Tray != y.Tray) return false;
             for (int i = 0; i < x.keyBindingsCounters.Count; i++)
             {
                 if (x.keyBindingsCounters[i].Keys.Count != y.keyBindingsCounters[i].Keys.Count) return false;

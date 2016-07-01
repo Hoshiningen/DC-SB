@@ -5,25 +5,33 @@ using System.Text;
 
 namespace DC_SB.Utils
 {
-    public class IniFile
+    public static class IniFile
     {
+        public static bool Portable { get; private set; }
+
         public const string DEFAULT_CONFIG_FILE_NAME = "config.ini";
         public const string DEFAULT_CONFIG_DIR_NAME = "DeathCounter";
 
         public static string DEFAULT_CONFIG_DIR = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), DEFAULT_CONFIG_DIR_NAME);
         public static string OLD_CONFIG_DIR = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_CONFIG_DIR_NAME);
-        public static string PORTABLE_CONFIG_DIR = Directory.GetCurrentDirectory();
 
         public static string DEFAULT_CONFIG_PATH = Path.Combine(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILE_NAME);
         public static string OLD_CONFIG_PATH = Path.Combine(OLD_CONFIG_DIR, DEFAULT_CONFIG_FILE_NAME);
-        public static string PORTABLE_CONFIG_PATH = Path.Combine(PORTABLE_CONFIG_DIR, DEFAULT_CONFIG_FILE_NAME);
 
-        public string FilePath { get; private set; }
+        private static string filePath;
+        public static string FilePath {
+            get { return filePath; }
+            set
+            {
+                filePath = value;
+                Create(value);
+            }
+        }
 
-        public IniFile(string filePath)
+        static IniFile()
         {
-            FilePath = filePath;
-            Create(filePath);
+            if (!Exists(DEFAULT_CONFIG_PATH) && Exists(OLD_CONFIG_PATH)) FilePath = OLD_CONFIG_PATH;
+            else FilePath = DEFAULT_CONFIG_PATH;
         }
 
         public static bool Exists(string path)
@@ -44,22 +52,15 @@ namespace DC_SB.Utils
             }
         }
 
-        public static bool IsPortableOn()
-        {
-            if (!Exists(PORTABLE_CONFIG_PATH)) return false;
-            var iniFile = new IniFile(PORTABLE_CONFIG_PATH);
-            return bool.Parse(iniFile.IniReadValue("Portable", "portable"));
-        }
-
-        public void IniWriteValue(string Section, string Key, string Value)
+        public static void IniWriteValue(string Section, string Key, string Value)
         {
             WritePrivateProfileString(Section, Key, Value, FilePath);
         }
 
-        public string IniReadValue(string Section, string Key)
+        public static string IniReadValue(string Section, string Key)
         {
-            StringBuilder temp = new StringBuilder(500);
-            int i = GetPrivateProfileString(Section, Key, "", temp, 500, FilePath);
+            StringBuilder temp = new StringBuilder(5000);
+            int i = GetPrivateProfileString(Section, Key, "", temp, 5000, FilePath);
             if (i == 0) return null;
             else return temp.ToString().Trim();
         }
