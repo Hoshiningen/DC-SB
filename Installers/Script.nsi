@@ -31,6 +31,7 @@ Section
 
     # install app files
     File "..\bin\Release\DC+SB.exe"
+    File "..\bin\Release\DC+SB.pdb"
     File "..\bin\Release\AutoUpdater.NET.dll"
     File "..\bin\Release\RawInput.dll"
     File "..\bin\Release\NAudio.dll"
@@ -61,8 +62,10 @@ Section "uninstall"
     # delete the uninstaller and app files
     Delete "$INSTDIR\uninstall.exe"
     Delete "$INSTDIR\DC+SB.exe"
+    Delete "$INSTDIR\DC+SB.pdb"
     Delete "$INSTDIR\AutoUpdater.NET.dll"
     Delete "$INSTDIR\RawInput.dll"
+    Delete "$INSTDIR\NAudio.dll"
     StrCpy $0 "$INSTDIR"
     Call un.DeleteDirIfEmpty
  

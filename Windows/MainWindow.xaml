@@ -7,7 +7,7 @@
     xmlns:l="clr-namespace:DC_SB.Utils"
     mc:Ignorable="d"
     Title="DC+SB" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}" MinHeight="200" 
-    MinWidth="216" Icon="/DC+SB;component/Resources/Icons/icon.ico" Loaded="Window_Loaded" Closing="Window_Closing">
+    MinWidth="227" Icon="/DC+SB;component/Resources/Icons/icon.ico" Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="boolToVisibility" />
         <l:InvertBooleanConverter x:Key="invertBooleanConverter" />
@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <Menu Grid.Row="0" Padding="0,3">
             <MenuItem Header="Settings" Click="Settings_Click" />
         </Menu>
@@ -31,7 +31,19 @@
                 <ColumnDefinition Width="{Binding SecondColumnWidth, Mode=TwoWay}" />
             </Grid.ColumnDefinitions>
 
-            <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="5" />
+            <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="16" />
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="&#9207;Counters" Visibility="{Binding ActualWidth, ElementName=countersGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=195}" IsHitTestVisible="False" >
+                    <TextBlock.LayoutTransform>
+                        <RotateTransform Angle="270"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                <TextBlock Text="Sounds&#9207;" Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=195}" IsHitTestVisible="False" >
+                    <TextBlock.LayoutTransform>
+                        <RotateTransform Angle="90"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+            </StackPanel>
 
             <Grid x:Name="countersGrid" Grid.Column="0" IsEnabled="{Binding Path=DisableCounters, Converter={StaticResource invertBooleanConverter}}">
                 <Grid.RowDefinitions>
@@ -57,11 +69,11 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ActualWidth, ElementName=countersGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=195}">
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <Button Content="Add" Width="60" Margin="5,5,0,5" Click="AddCounter_Click" />
                     <Button Content="Remove" Width="60" Margin="5" Click="RemoveCounter_Click" />
                 </StackPanel>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ActualWidth, ElementName=countersGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=65}">
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
                     <Button Content="-" Width="25" Margin="5" Click="Minus_Click" />
                     <Button Content="+" Width="25" Margin="0,5,5,5" Click="Plus_Click" />
                 </StackPanel>
@@ -80,10 +92,9 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <Label Grid.Column="0" Content="Sounds" />
-                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Margin="5,0"
-                                Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=165}">
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Margin="5,0" >
                         <Image Grid.Column="1" Height="10" Width="10" Margin="5">
                             <Image.Source>
                                 <BitmapImage UriSource="/DC+SB;component/Resources/Icons/volume.png" />
@@ -109,11 +120,11 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=195}">
+                <StackPanel Grid.Row="2" Orientation="Horizontal" >
                     <Button Content="Add" Width="60" Margin="5,5,0,5" Click="AddSound_Click" />
                     <Button Content="Remove" Width="60" Margin="5" Click="RemoveSound_Click" />
                 </StackPanel>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ActualWidth, ElementName=soundsGrid, Converter={StaticResource sizeToVisibility}, ConverterParameter=65}">
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
                     <Button Grid.Column="3" Width="25" Margin="5" Click="Play_Click" >
                         <Image  Width="8" Height="8" Source="/DC+SB;component/Resources/Icons/play.png" />
                     </Button>

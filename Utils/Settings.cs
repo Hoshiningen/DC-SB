@@ -340,43 +340,62 @@ namespace DC_SB.Utils
             string tmp = IniFile.IniReadValue("Counters", "Log" + index);
             while (tmp != null && tmp.Trim() != "")
             {
-                var splitted = tmp.Split('\t');
-                var name = splitted[0];
-                string filePath = splitted[1];
-                Counters.Add(new Counter(name, filePath));
-                index++;
-                tmp = IniFile.IniReadValue("Counters", "Log" + index);
+                try
+                {
+                    var splitted = tmp.Split('\t');
+                    var name = splitted[0];
+                    string filePath = splitted[1];
+                    Counters.Add(new Counter(name, filePath));
+                    index++;
+                    tmp = IniFile.IniReadValue("Counters", "Log" + index);
+                }
+                catch (Exception e)
+                {
+                    string message = "Error parsing counter item:\n" + tmp + "\n";
+                    throw new Exception(message, e);
+                }
             }
 
             index = 1;
             tmp = IniFile.IniReadValue("Sounds", "Log" + index);
             while (tmp != null && tmp.Trim() != "")
             {
-                var splitted = tmp.Split('\t');
-
-                var name = splitted[0];
-
-                var filePaths = new List<string>();
-                var files = splitted[1].Split(new string[] { " |" }, StringSplitOptions.RemoveEmptyEntries);
-
-                string dirName = Path.GetDirectoryName(files[0]);
-                filePaths.Add(files[0]);               
-                for (int i = 1; i < files.Length; i++)
+                try
                 {
-                    filePaths.Add(Path.Combine(dirName, files[i]));
-                }
+                    var splitted = tmp.Split('\t');
 
-                var keys = new ObservableCollection<Input.VKeys>();
-                var keyNames = splitted[2].Replace("Choose another file | ", "").Split(new string[] { " + " }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string key in keyNames)
+                    var name = splitted[0];
+
+                    var filePaths = new List<string>();
+                    var files = splitted[1].Split(new string[] { " |" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    string dirName = Path.GetDirectoryName(files[0]);
+                    filePaths.Add(files[0]);
+                    for (int i = 1; i < files.Length; i++)
+                    {
+                        filePaths.Add(Path.Combine(dirName, files[i]));
+                    }
+
+                    var keys = new ObservableCollection<Input.VKeys>();
+                    if (splitted.Length > 2)
+                    {
+                        var keyNames = splitted[2].Replace("Choose another file | ", "").Split(new string[] { " + " }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string key in keyNames)
+                        {
+                            Input.VKeys vKey;
+                            if (Enum.TryParse(key, out vKey)) keys.Add(vKey);
+                        }
+                    }
+
+                    Sounds.Add(new Sound(name, filePaths, keys));
+                    index++;
+                    tmp = IniFile.IniReadValue("Sounds", "Log" + index);
+                }
+                catch (Exception e)
                 {
-                    Input.VKeys vKey;
-                    if (Enum.TryParse(key, out vKey)) keys.Add(vKey);
+                    string message = "Error parsing sound item:\n" + tmp + "\n";
+                    throw new Exception(message, e);
                 }
-
-                Sounds.Add(new Sound(name, filePaths, keys));
-                index++;
-                tmp = IniFile.IniReadValue("Sounds", "Log" + index);
             }
         }
         #endregion
@@ -452,10 +471,14 @@ namespace DC_SB.Utils
                         filePaths += " |" + Path.GetFileName(sound.FilePaths[j]);
                     }
 
-                    string keys = sound.Keys[0].ToString();
-                    for (int j = 1; j < sound.Keys.Count; j++)
+                    string keys = "";
+                    if (sound.Keys.Count > 0)
                     {
-                        keys += " + " + sound.Keys[j];
+                        keys += sound.Keys[0].ToString();
+                        for (int j = 1; j < sound.Keys.Count; j++)
+                        {
+                            keys += " + " + sound.Keys[j];
+                        }
                     }
 
                     IniFile.IniWriteValue("Sounds", "Log" + (i + 1), string.Format("{0}\t{1}\t{2}", sound.Name, filePaths, keys));

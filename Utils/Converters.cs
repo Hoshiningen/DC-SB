@@ -86,9 +86,9 @@ namespace DC_SB.Utils
             {
                 int threshold = int.Parse((string)parameter);
                 double size = (double)value;
-                if (size < threshold) return Visibility.Hidden;
+                if (size < threshold) return Visibility.Visible;
             }
-            return Visibility.Visible;
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
