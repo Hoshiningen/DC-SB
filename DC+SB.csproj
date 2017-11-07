@@ -31,19 +31,31 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\Icons\icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>DC_SB.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoUpdater.NET">
       <HintPath>..\..\Past\DC+SB\DC+SB\bin\Debug\AutoUpdater.NET.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
+    <Reference Include="NAudio, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.1.8.0\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NAudio.Vorbis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.Vorbis.1.0.0.0\lib\net35\NAudio.Vorbis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NVorbis.0.8.5.0\lib\NVorbis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RawInput">
@@ -65,6 +77,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Program.cs" />
     <Compile Include="Utils\Converters.cs" />
     <Compile Include="Utils\Counter.cs" />
     <Compile Include="Utils\ErrorHandler.cs" />
@@ -72,6 +85,7 @@
     <Compile Include="Utils\Logic.cs" />
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Utils\Players\IPlayer.cs" />
+    <Compile Include="Utils\Players\LoopStream.cs" />
     <Compile Include="Utils\Players\NAudioPlayer.cs" />
     <Compile Include="Utils\Players\WMPlayer.cs" />
     <Compile Include="Utils\Settings.cs" />

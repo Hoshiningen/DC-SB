@@ -36,7 +36,8 @@ namespace DC_SB.Windows
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             long count;
-            if (counter.IsValid() && long.TryParse(Count.Text, out count))
+            int increment;
+            if (counter.IsValid() && long.TryParse(Count.Text, out count) && int.TryParse(Increment.Text, out increment))
             {
                 Result = counter;
                 Close();
@@ -49,7 +50,6 @@ namespace DC_SB.Windows
                     List<TextBox> toFlash = new List<TextBox>();
                     if (counter.Name == null || counter.Name.Trim() == "") toFlash.Add(NameField);
                     if (counter.FilePath == null || counter.FilePath == "") toFlash.Add(FileLabel);
-                    if (toFlash.Count == 0) toFlash.Add(FileLabel);
                     foreach (TextBox textBox in toFlash) textBox.BeginStoryboard(flash);
                 }
             }

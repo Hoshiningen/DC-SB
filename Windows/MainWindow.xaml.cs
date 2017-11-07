@@ -21,7 +21,7 @@ namespace DC_SB
             InitializeComponent();
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AutoUpdater.Start("http://kalejin.eu/dc+sb/dc+sb.xml");
-            ErrorHandler.Owner = this;
+            //ErrorHandler.Owner = this;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -125,7 +125,7 @@ namespace DC_SB
             logic.RegisterEvents(input);
             if (soundWindow.Result != null)
             {
-                settings.Sounds.Add(soundWindow.Result);
+                settings.SelectedSoundGroup.Add(soundWindow.Result);
                 settings.Save();
             }
         }
@@ -140,7 +140,7 @@ namespace DC_SB
                 deleteDialog.ShowDialog();
                 if (deleteDialog.Result.HasValue && deleteDialog.Result.Value)
                 {
-                    settings.Sounds.Remove(sound);
+                    settings.SelectedSoundGroup.Remove(sound);
                     settings.Save();
                 }
             }
@@ -149,7 +149,7 @@ namespace DC_SB
         private void Sounds_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             int index = ((System.Windows.Controls.DataGridRow)sender).GetIndex();
-            var sound = new Sound(settings.Sounds[index]);
+            var sound = new Sound(settings.SelectedSoundGroup[index]);
             var soundWindow = new SoundWindow(input, sound);
             soundWindow.Owner = this;
             logic.UnregisterEvents(input);
@@ -157,7 +157,7 @@ namespace DC_SB
             logic.RegisterEvents(input);
             if (soundWindow.Result != null)
             {
-                settings.Sounds[index] = soundWindow.Result;
+                settings.SelectedSoundGroup[index] = soundWindow.Result;
                 settings.Save();
             }
         }

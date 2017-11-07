@@ -80,6 +80,18 @@ namespace DC_SB.Utils
             }
         }
 
+        private int increment = 1;
+        public int Increment
+        {
+            get { return increment; }
+            set
+            {
+                if (value == increment) return;
+                increment = value;
+                OnPropertyChanged("Increment");
+            }
+        }
+
         public Counter()
         {
         }
@@ -88,14 +100,16 @@ namespace DC_SB.Utils
         {
             name = counter.Name;
             filePath = counter.FilePath;
+            increment = counter.Increment;
             count = counter.Count;
             ValidFile = counter.ValidFile;
         }
 
-        public Counter(string name, string filePath)
+        public Counter(string name, string filePath, int increment)
         {
             Name = name;
             FilePath = filePath;
+            Increment = increment;
         }
 
         public bool IsValid()

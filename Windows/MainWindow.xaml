@@ -13,6 +13,7 @@
         <l:InvertBooleanConverter x:Key="invertBooleanConverter" />
         <l:SizeToVisibility x:Key="sizeToVisibility" />
         <l:VKeysToString x:Key="vKeysToString" />
+        <l:ItemToIndexConverter x:Key="itemToIndexConverter" />
     </Window.Resources>
     <Grid IsEnabled="{Binding Initialized}">
         <Grid.RowDefinitions>
@@ -82,6 +83,7 @@
             <Grid x:Name="soundsGrid" Grid.Column="2" IsEnabled="{Binding Path=DisableSounds, Converter={StaticResource invertBooleanConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -104,11 +106,22 @@
                                 IsMoveToPointEnabled="True" Value="{Binding Volume, Mode=TwoWay}" />
                     </StackPanel>
                 </Grid>
-
-                <DataGrid Grid.Row="1" x:Name="Sounds" AutoGenerateColumns="False" CanUserResizeColumns="True" CanUserReorderColumns="False"
-                          CanUserSortColumns="False" SelectionMode="Single" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" 
-                          SelectionUnit="FullRow" HeadersVisibility="Column" HorizontalScrollBarVisibility="Disabled" Margin="5,0" ItemsSource="{Binding Sounds}"
-                          SelectedItem="{Binding SelectedSound, Mode=TwoWay}">
+                <TabControl Grid.Row="1" Margin="5,0" BorderBrush="{x:Null}"
+                            SelectedItem="{Binding SelectedSoundGroup}" ItemsSource="{Binding SoundGroups}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource TemplatedParent}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+                <DataGrid Grid.Row="2" x:Name="Sounds" AutoGenerateColumns="False" CanUserResizeColumns="True" CanUserReorderColumns="False"
+                            CanUserSortColumns="False" SelectionMode="Single" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" 
+                            SelectionUnit="FullRow" HeadersVisibility="Column" HorizontalScrollBarVisibility="Disabled" Margin="5,0" ItemsSource="{Binding SelectedSoundGroups}"
+                            SelectedItem="{Binding SelectedSound, Mode=TwoWay}">
                     <DataGrid.ItemContainerStyle>
                         <Style TargetType="DataGridRow">
                             <EventSetter Event="MouseDoubleClick" Handler="Sounds_DoubleClick" />
@@ -120,11 +133,11 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal" >
+                <StackPanel Grid.Row="3" Orientation="Horizontal" >
                     <Button Content="Add" Width="60" Margin="5,5,0,5" Click="AddSound_Click" />
                     <Button Content="Remove" Width="60" Margin="5" Click="RemoveSound_Click" />
                 </StackPanel>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" >
                     <Button Grid.Column="3" Width="25" Margin="5" Click="Play_Click" >
                         <Image  Width="8" Height="8" Source="/DC+SB;component/Resources/Icons/play.png" />
                     </Button>

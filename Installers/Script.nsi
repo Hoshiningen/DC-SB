@@ -1,25 +1,39 @@
-# define pages
-Page directory
-Page instfiles
-UninstPage uninstConfirm
-UninstPage instfiles
-
 # define name of installer
-!system "ExtractVersionInfo.exe"
-!include "App-Version.txt"
-Name "DC+SB, Version ${Version}"
-OutFile "Build\DC+SB_v${Version}.exe"
+	!system "ExtractVersionInfo.exe"
+	!include "App-Version.txt"
+	!include "MUI.nsh"
+	Name "DC+SB, Version ${Version}"
+	OutFile "Build\DC+SB_v${Version}.exe"
  
 # define installation directory
-InstallDir $PROGRAMFILES\DC+SB
-InstallDirRegKey HKLM Software\DC+SB InstallLocation
+	InstallDir $PROGRAMFILES\DC+SB
+	InstallDirRegKey HKLM Software\DC+SB InstallLocation
  
-# For removing Start Menu shortcut in Windows 7
-RequestExecutionLevel admin
+# for removing Start Menu shortcut in Windows 7
+	RequestExecutionLevel admin
+
+# install pages
+	!insertmacro MUI_PAGE_WELCOME
+	!insertmacro MUI_PAGE_DIRECTORY
+	!insertmacro MUI_PAGE_INSTFILES
+		# These indented statements modify settings for MUI_PAGE_FINISH
+		!define MUI_FINISHPAGE_NOAUTOCLOSE
+		!define MUI_FINISHPAGE_RUN "$INSTDIR\DC+SB.exe"
+		!define MUI_FINISHPAGE_RUN_CHECKED
+		!define MUI_FINISHPAGE_RUN_TEXT "Start DC+SB"
+	!insertmacro MUI_PAGE_FINISH
+
+# uninstall pages
+	!insertmacro MUI_UNPAGE_WELCOME
+	!insertmacro MUI_UNPAGE_CONFIRM
+	!insertmacro MUI_UNPAGE_INSTFILES
+	!insertmacro MUI_UNPAGE_FINISH
+ 
+# language
+	!insertmacro MUI_LANGUAGE "English"
 
 # start default section
 Section
-
     # creating start menu shortcuts for all users
     SetShellVarContext all
 
@@ -35,6 +49,8 @@ Section
     File "..\bin\Release\AutoUpdater.NET.dll"
     File "..\bin\Release\RawInput.dll"
     File "..\bin\Release\NAudio.dll"
+    File "..\bin\Release\NAudio.Vorbis.dll"
+    File "..\bin\Release\NVorbis.dll"
  
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
@@ -66,6 +82,8 @@ Section "uninstall"
     Delete "$INSTDIR\AutoUpdater.NET.dll"
     Delete "$INSTDIR\RawInput.dll"
     Delete "$INSTDIR\NAudio.dll"
+    Delete "$INSTDIR\NAudio.Vorbis.dll"
+    Delete "$INSTDIR\NVorbis.dll"
     StrCpy $0 "$INSTDIR"
     Call un.DeleteDirIfEmpty
  

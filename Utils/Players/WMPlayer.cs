@@ -3,10 +3,16 @@
     class WMPlayer : IPlayer
     {
         private WMPLib.WindowsMediaPlayer player;
+        private float volumeMultiplyer = 1f;
+        private int volume;
         public int Volume
         {
-            get { return player.settings.volume; }
-            set { player.settings.volume = value; }
+            get { return volume; }
+            set
+            {
+                volume = value;
+                player.settings.volume = (int)(volume * volumeMultiplyer);
+            }
         }
 
         public WMPlayer()
@@ -27,9 +33,12 @@
             player.controls.pause();
         }
 
-        public void Play(string filePath)
+        public void Play(string filePath, int volume, bool loop)
         {
             player.URL = filePath;
+            volumeMultiplyer = volume / 100f;
+            player.settings.volume = (int) (this.volume * volumeMultiplyer);
+            player.settings.setMode("loop", loop);
             player.controls.play();
         }
 

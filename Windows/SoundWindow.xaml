@@ -26,6 +26,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Name:" />
@@ -40,7 +42,14 @@
         <TextBox Grid.Row="2" Grid.Column="1" x:Name="KeyField" Margin="5,5,0,5" IsReadOnly="True" PreviewMouseDoubleClick="BindKey_Click"
                  Text="{Binding Keys, Converter={StaticResource vKeysToString}, Mode=OneWay}" HorizontalScrollBarVisibility="Auto" />
 
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
+        <Label Grid.Row="3" Grid.Column="0" Content="Volume:" />
+        <Slider Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="VolumeField" Margin="5,5,0,5" Value="{Binding Volume}" Maximum="100" 
+                AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True"/>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Loop:" />
+        <CheckBox Grid.Row="4" Grid.Column="1" Margin="5" IsChecked="{Binding Loop, UpdateSourceTrigger=PropertyChanged}" />
+
+        <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Content="Cancel" Height="20" Width="75" Click="Cancel_Click" />
             <Button Content="OK" Height="20" Width="75" Margin="5,0" Click="Ok_Click" />
         </StackPanel>

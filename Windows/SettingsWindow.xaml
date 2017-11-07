@@ -60,6 +60,10 @@
                     <GroupBox Header="Output Device">
                         <StackPanel>
                             <ComboBox x:Name="DevicesDDL" Visibility="{Binding IsChecked, ElementName=nAudio, Converter={StaticResource boolToVisibility}}" ItemsSource="{Binding DevicesList}" SelectedIndex="{Binding Device, Mode=TwoWay}" />
+                            <StackPanel Margin="0,5,0,0" Visibility="{Binding IsChecked, ElementName=nAudio, Converter={StaticResource boolToVisibility}}">
+                                <CheckBox x:Name="SecondDeviceCB" Margin="0,3,0,1" VerticalAlignment="Center" IsChecked="{Binding IsSecondDeviceEnabled}" Content="Second Output Device" />
+                                <ComboBox x:Name="SecondDeviceDDL" IsEnabled="{Binding ElementName=SecondDeviceCB, Path=IsChecked}" ItemsSource="{Binding DevicesList}" SelectedIndex="{Binding SecondDevice, Mode=TwoWay}" />
+                            </StackPanel>
                             <ComboBox IsEnabled="False" Visibility="{Binding IsChecked, ElementName=wMP, Converter={StaticResource boolToVisibility}}" SelectedIndex="0" ToolTip="Changing Output Device is allowed only with NAudio" ToolTipService.ShowOnDisabled="True">
                                 <ComboBoxItem>Default Output Device</ComboBoxItem>
                             </ComboBox>

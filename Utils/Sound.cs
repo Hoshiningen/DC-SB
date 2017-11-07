@@ -22,6 +22,27 @@ namespace DC_SB.Utils
                 OnPropertyChanged("Name");
             }
         }
+        private int volume;
+        public int Volume
+        {
+            get { return volume; }
+            set
+            {
+                if (value == volume) return;
+                volume = value;
+                OnPropertyChanged("Volume");
+            }
+        }
+        private bool loop;
+        public bool Loop
+        {
+            get { return loop; }
+            set
+            {
+                loop = value;
+                OnPropertyChanged("Loop");
+            }
+        }
 
         private List<string> filePaths;
         public List<string> FilePaths
@@ -56,22 +77,27 @@ namespace DC_SB.Utils
             FileNames = new List<string>();
             filePaths = new List<string>();
             keys = new ObservableCollection<Input.VKeys>();
+            Volume = 50;
         }
 
         public Sound(Sound sound)
         {
             name = sound.Name;
+            volume = sound.Volume;
+            loop = sound.Loop;
             FileNames = new List<string>();
             filePaths = new List<string>(sound.FilePaths);
             keys = new ObservableCollection<Input.VKeys>(sound.Keys);
         }
 
-        public Sound(string name, List<string> filePaths, ObservableCollection<Input.VKeys> keys)
+        public Sound(string name, int volume, bool loop, List<string> filePaths, ObservableCollection<Input.VKeys> keys)
         {
             FileNames = new List<string>();
             FilePaths = filePaths;
             Keys = keys;
             Name = name;
+            Volume = volume;
+            Loop = loop;
             FilePaths = filePaths;
         }
 
@@ -79,6 +105,7 @@ namespace DC_SB.Utils
         {
             if (Name == null || Name.Trim() == "") return false;
             if (Keys.Count == 0) return false;
+            if (FilePaths.Count == 0) return false;
             foreach (string filePath in FilePaths)
             {
                 if (!File.Exists(filePath)) return false;
@@ -90,7 +117,7 @@ namespace DC_SB.Utils
         {
             var fileDialog = new OpenFileDialog();
             fileDialog.Title = "Choose sound file/s";
-            fileDialog.Filter = "sound files (*.wma; *.mp3; *.wav)|*.wma;*.mp3;*.wav";
+            fileDialog.Filter = "sound files (*.wma; *.mp3; *.wav; *.ogg; *.m4a)|*.wma;*.mp3;*.wav;*.ogg;*.m4a";
             fileDialog.AddExtension = true;
             fileDialog.RestoreDirectory = true;
             fileDialog.Multiselect = true;

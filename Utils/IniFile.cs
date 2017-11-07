@@ -1,6 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 
 namespace DC_SB.Utils
@@ -17,6 +20,13 @@ namespace DC_SB.Utils
 
         public static string DEFAULT_CONFIG_PATH = Path.Combine(DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_FILE_NAME);
         public static string OLD_CONFIG_PATH = Path.Combine(OLD_CONFIG_DIR, DEFAULT_CONFIG_FILE_NAME);
+
+        const uint FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
+        const uint FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
+        const uint FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+        const uint FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000;
+        const uint FORMAT_MESSAGE_FROM_HMODULE = 0x00000800;
+        const uint FORMAT_MESSAGE_FROM_STRING = 0x00000400;
 
         private static string filePath;
         public static string FilePath {
@@ -48,27 +58,36 @@ namespace DC_SB.Utils
             }
             if (!File.Exists(path))
             {
-                File.WriteAllText(path, "");
+                FileSecurity security = new FileSecurity();
+                security.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-1-0"), FileSystemRights.FullControl, InheritanceFlags.None, PropagationFlags.None, AccessControlType.Allow));
+                File.Create(path, 1, FileOptions.None, security).Close();
             }
         }
 
         public static void IniWriteValue(string Section, string Key, string Value)
         {
-            WritePrivateProfileString(Section, Key, Value, FilePath);
+            long result = WritePrivateProfileStringA(Section, Key, Value, FilePath);
+            if (result == 0)
+            {
+                string errorMessage = new Win32Exception(Marshal.GetLastWin32Error()).Message;
+                Console.WriteLine(errorMessage);
+                ErrorHandler.Raise("Following error occured when saving data to config file:\n{0}\nData:\n[{1}]{2}={3}\n", 
+                    errorMessage, Section, Key, Value);
+            }
         }
 
         public static string IniReadValue(string Section, string Key)
         {
             StringBuilder temp = new StringBuilder(5000);
-            int i = GetPrivateProfileString(Section, Key, "", temp, 5000, FilePath);
+            int i = GetPrivateProfileStringA(Section, Key, "", temp, 5000, FilePath);
             if (i == 0) return null;
             else return temp.ToString().Trim();
         }
 
         [DllImport("kernel32")]
-        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+        private static extern long WritePrivateProfileStringA(string section, string key, string val, string filePath);
 
         [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
+        private static extern int GetPrivateProfileStringA(string section, string key, string def, StringBuilder retVal, int size, string filePath);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using RawInput_dll;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Timers;
 
 namespace DC_SB.Utils
@@ -283,7 +284,7 @@ namespace DC_SB.Utils
                     }
                 }
             }
-            else if (e.KeyPressEvent.Message == 257)
+            else if (e.KeyPressEvent.Message == 257 || e.KeyPressEvent.Message == 261)
             {
                 if (key == VKeys.SHIFT)
                 {

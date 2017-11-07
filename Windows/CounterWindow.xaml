@@ -23,6 +23,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Name:" />
@@ -32,9 +33,12 @@
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="FileLabel" Text="{Binding FilePath, Mode=OneWay}" Margin="5,5,0,5" IsReadOnly="True" PreviewMouseDoubleClick="ChooseFile_Click" HorizontalScrollBarVisibility="Auto" />
 
         <Label Grid.Row="2" Grid.Column="0" Content="Count:" />
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="Count" Margin="5,5,0,5" Text="{Binding Count}" IsEnabled="{Binding ValidFile}" HorizontalScrollBarVisibility="Auto" />
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="Count" Margin="5,5,0,5" Text="{Binding Count}" IsEnabled="{Binding ValidFile}" HorizontalAlignment="Stretch" />
 
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
+        <Label Grid.Row="3" Grid.Column="0" Content="Increment:" />
+        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="Increment" Margin="5,5,0,5" Text="{Binding Increment}" IsEnabled="{Binding ValidFile}" HorizontalAlignment="Stretch" />
+
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Content="Cancel" Height="20" Width="75" Click="Cancel_Click" />
             <Button Content="OK" Height="20" Width="75" Margin="5,0" Click="Ok_Click" />
         </StackPanel>

@@ -14,6 +14,7 @@ namespace DC_SB.Utils
         public const int NAUDIO = 1;
 
         public IPlayer Player { get; private set; }
+        public IPlayer SecondPlayer { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
@@ -22,7 +23,7 @@ namespace DC_SB.Utils
         }
 
         #region Bindable properties
-        private ObservableCollection<Counter> counters;
+        private ObservableCollection<Counter> counters = new ObservableCollection<Counter>();
         public ObservableCollection<Counter> Counters
         {
             get { return counters; }
@@ -32,14 +33,34 @@ namespace DC_SB.Utils
                 OnPropertyChanged("Counters");
             }
         }
-        private ObservableCollection<Sound> sounds;
-        public ObservableCollection<Sound> Sounds
+        //private observablecollection<sound> sounds;
+        //public observablecollection<sound> sounds
+        //{
+        //    get { return sounds; }
+        //    private set
+        //    {
+        //        sounds = value;
+        //        onpropertychanged("sounds");
+        //    }
+        //}
+        private ObservableCollection<Sound> selectedSoundGroup = new ObservableCollection<Sound>();
+        public ObservableCollection<Sound> SelectedSoundGroup
         {
-            get { return sounds; }
+            get { return selectedSoundGroup; }
             private set
             {
-                sounds = value;
-                OnPropertyChanged("Sounds");
+                selectedSoundGroup = value;
+                OnPropertyChanged("SelectedSoundGroup");
+            }
+        }
+        private ObservableCollection<ObservableCollection<Sound>> soundGroups = new ObservableCollection<ObservableCollection<Sound>>();
+        public ObservableCollection<ObservableCollection<Sound>> SoundGroups
+        {
+            get { return soundGroups; }
+            private set
+            {
+                soundGroups = value;
+                OnPropertyChanged("SoundGroups");
             }
         }
         private List<KeyPrompt> keyBindingsCounters;
@@ -77,8 +98,11 @@ namespace DC_SB.Utils
                 {
                     Player = new NAudioPlayer();
                     Player.SetDevice(Device);
+                    SecondPlayer = new NAudioPlayer();
+                    SecondPlayer.SetDevice(SecondDevice);
+                    SecondPlayer.Volume = Volume;
                 }
-                Player.Volume = Volume;
+                Player.Volume = Volume;                   
                 OnPropertyChanged("PlayerLib");
             }
         }
@@ -101,6 +125,29 @@ namespace DC_SB.Utils
                 device = value;
                 Player.SetDevice(value);
                 OnPropertyChanged("Device");
+            }
+        }
+        private bool isSecondDeviceEnabled;
+        public bool IsSecondDeviceEnabled
+        {
+            get { return isSecondDeviceEnabled; }
+            set
+            {
+                isSecondDeviceEnabled = value;
+                if (SecondPlayer != null)
+                    SecondPlayer.SetDevice(SecondDevice);
+                OnPropertyChanged("IsSecondDeviceEnabled");
+            }
+        }
+        private int secondDevice;
+        public int SecondDevice
+        {
+            get { return secondDevice; }
+            set
+            {
+                secondDevice = value;
+                SecondPlayer.SetDevice(value);
+                OnPropertyChanged("SecondDevice");
             }
         }
         private bool disableCounters { get; set; }
@@ -143,7 +190,7 @@ namespace DC_SB.Utils
                 OnPropertyChanged("WindowHeight");
             }
         }
-        private double windowWidth = 216;
+        private double windowWidth = 500;
         public double WindowWidth
         {
             get { return windowWidth; }
@@ -153,7 +200,7 @@ namespace DC_SB.Utils
                 OnPropertyChanged("WindowWidth");
             }
         }
-        private double splitterPosition;
+        private double splitterPosition = 100;
         public double SplitterPosition
         {
             get { return splitterPosition; }
@@ -167,7 +214,7 @@ namespace DC_SB.Utils
                 OnPropertyChanged("SplitterPosition");
             }
         }
-        public GridLength firstColumnWidth = new GridLength();
+        public GridLength firstColumnWidth = new GridLength(1, GridUnitType.Star);
         public GridLength FirstColumnWidth
         {
             get { return firstColumnWidth; }
@@ -179,7 +226,7 @@ namespace DC_SB.Utils
                 OnPropertyChanged("SplitterPosition");
             }
         }
-        public GridLength SecondColumnWidth { get; set; } = new GridLength();
+        public GridLength SecondColumnWidth { get; set; } = new GridLength(1, GridUnitType.Star);
         private Counter selectedCounter;
         public Counter SelectedCounter
         {
@@ -208,6 +255,7 @@ namespace DC_SB.Utils
             {
                 volume = value;
                 Player.Volume = value;
+                SecondPlayer.Volume = value;
                 OnPropertyChanged("Volume");
                 Save();
             }
@@ -237,11 +285,15 @@ namespace DC_SB.Utils
         public Settings(Settings settings)
         {
             Counters = settings.Counters;
-            Sounds = settings.Sounds;
+            SoundGroups = settings.SoundGroups;
+            SelectedSoundGroup = settings.SelectedSoundGroup;
             volume = settings.Volume;
             device = settings.Device;
+            secondDevice = settings.SecondDevice;
             playerLib = settings.PlayerLib;
             Player = settings.Player;
+            SecondPlayer = settings.SecondPlayer;
+            IsSecondDeviceEnabled = settings.IsSecondDeviceEnabled;
             WMPLibrary = settings.WMPLibrary;
             DevicesList = OutputDevice.GetDevices();
             DisableCounters = settings.DisableCounters;
@@ -269,8 +321,7 @@ namespace DC_SB.Utils
         private void LoadSettings()
         {
             string tmp;
-            Sounds = new ObservableCollection<Sound>();
-            Counters = new ObservableCollection<Counter>();
+            SoundGroups.Add(SelectedSoundGroup);
 
             tmp = IniFile.IniReadValue("Size", "form");
             if (tmp != null)
@@ -289,7 +340,14 @@ namespace DC_SB.Utils
             }
 
             tmp = IniFile.IniReadValue("Size", "split");
-            if (tmp != null) SplitterPosition = double.Parse(tmp);
+            if (tmp != null)
+            {
+                try
+                {
+                    SplitterPosition = double.Parse(tmp);
+                }
+                catch { }
+            }
 
             try
             {
@@ -305,6 +363,13 @@ namespace DC_SB.Utils
 
             tmp = IniFile.IniReadValue("Sounds", "device");
             device = OutputDevice.GetDeviceNumber(tmp);
+
+            tmp = IniFile.IniReadValue("Sounds", "second_device");
+            secondDevice = OutputDevice.GetDeviceNumber(tmp);
+
+            tmp = IniFile.IniReadValue("Sounds", "is_second_device_enabled");
+            try { IsSecondDeviceEnabled = bool.Parse(tmp); }
+            catch { }
 
             tmp = IniFile.IniReadValue("Sounds", "volume");
             try { volume = int.Parse(tmp); }
@@ -344,8 +409,13 @@ namespace DC_SB.Utils
                 {
                     var splitted = tmp.Split('\t');
                     var name = splitted[0];
-                    string filePath = splitted[1];
-                    Counters.Add(new Counter(name, filePath));
+
+                    string filePath = splitted.Length > 1 ? splitted[1] : "";
+
+                    int increment = 1;
+                    if (splitted.Length > 2) int.TryParse(splitted[2], out increment);
+
+                    Counters.Add(new Counter(name, filePath, increment));
                     index++;
                     tmp = IniFile.IniReadValue("Counters", "Log" + index);
                 }
@@ -367,13 +437,16 @@ namespace DC_SB.Utils
                     var name = splitted[0];
 
                     var filePaths = new List<string>();
-                    var files = splitted[1].Split(new string[] { " |" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    string dirName = Path.GetDirectoryName(files[0]);
-                    filePaths.Add(files[0]);
-                    for (int i = 1; i < files.Length; i++)
+                    if (splitted.Length > 1 && splitted[1].Trim() != "")
                     {
-                        filePaths.Add(Path.Combine(dirName, files[i]));
+                        var files = splitted[1].Split(new string[] { " |" }, StringSplitOptions.RemoveEmptyEntries);
+
+                        string dirName = Path.GetDirectoryName(files[0]);
+                        filePaths.Add(files[0]);
+                        for (int i = 1; i < files.Length; i++)
+                        {
+                            filePaths.Add(Path.Combine(dirName, files[i]));
+                        }
                     }
 
                     var keys = new ObservableCollection<Input.VKeys>();
@@ -387,7 +460,26 @@ namespace DC_SB.Utils
                         }
                     }
 
-                    Sounds.Add(new Sound(name, filePaths, keys));
+                    int volume;
+                    if (splitted.Length < 4 || !int.TryParse(splitted[3], out volume))
+                    {
+                        volume = 100;
+                    }
+
+                    bool loop;
+                    if (splitted.Length < 5 || !bool.TryParse(splitted[4], out loop))
+                    {
+                        loop = false;
+                    }
+
+                    int soundGroup;
+                    if (splitted.Length < 6 || !int.TryParse(splitted[5], out soundGroup))
+                    {
+                        soundGroup = 0;
+                    }
+
+                    while (SoundGroups.Count <= soundGroup) SoundGroups.Add(new ObservableCollection<Sound>());
+                    SoundGroups[soundGroup].Add(new Sound(name, volume, loop, filePaths, keys));
                     index++;
                     tmp = IniFile.IniReadValue("Sounds", "Log" + index);
                 }
@@ -408,6 +500,8 @@ namespace DC_SB.Utils
                 IniFile.IniWriteValue("Size", "form", string.Format("{0}\t{1}", WindowWidth, WindowHeight));
                 IniFile.IniWriteValue("Size", "split", SplitterPosition.ToString());
                 IniFile.IniWriteValue("Sounds", "device", DevicesList[Device].Name);
+                IniFile.IniWriteValue("Sounds", "is_second_device_enabled", IsSecondDeviceEnabled.ToString());
+                IniFile.IniWriteValue("Sounds", "second_device", DevicesList[SecondDevice].Name);
                 IniFile.IniWriteValue("Sounds", "player", PlayerLib.ToString());
                 IniFile.IniWriteValue("Sounds", "volume", Volume.ToString());
                 IniFile.IniWriteValue("Settings", "counters_disable", DisableCounters.ToString());
@@ -446,42 +540,59 @@ namespace DC_SB.Utils
                     var counter = Counters[i];
                     string filePath = counter.FilePath;
                     if (IniFile.Portable) filePath = counter.FileName;
-                    IniFile.IniWriteValue("Counters", "Log" + (i + 1), string.Format("{0}\t{1}", counter.Name, filePath));
+                    IniFile.IniWriteValue("Counters", "Log" + (i + 1), string.Format("{0}\t{1}\t{2}", counter.Name, filePath, counter.Increment));
                 }
 
-                for (int i = 0; i < Sounds.Count; i++)
+                for (int i = 0; i < SoundGroups.Count; i++)
                 {
-                    var sound = Sounds[i];
+                    ObservableCollection<Sound> soundGroup = SoundGroups[i];
+                    for (int j = 0; j < soundGroup.Count; j++)
+                    {
+                        var sound = soundGroup[j];
 
-                    int startIndex;
-                    string filePaths;
-                    if (IniFile.Portable)
-                    {
-                        filePaths = "";
-                        startIndex = 0;
-                    }
-                    else
-                    {
-                        filePaths = sound.FilePaths[0];
-                        startIndex = 1;
-                    }
-
-                    for (int j = startIndex; j < sound.FilePaths.Count; j++)
-                    {
-                        filePaths += " |" + Path.GetFileName(sound.FilePaths[j]);
-                    }
-
-                    string keys = "";
-                    if (sound.Keys.Count > 0)
-                    {
-                        keys += sound.Keys[0].ToString();
-                        for (int j = 1; j < sound.Keys.Count; j++)
+                        int startIndex;
+                        string filePaths = "";
+                        if (sound.FilePaths.Count > 0)
                         {
-                            keys += " + " + sound.Keys[j];
-                        }
-                    }
+                            if (IniFile.Portable)
+                            {
+                                filePaths = "";
+                                startIndex = 0;
+                            }
+                            else
+                            {
+                                filePaths = sound.FilePaths[0];
+                                startIndex = 1;
+                            }
 
-                    IniFile.IniWriteValue("Sounds", "Log" + (i + 1), string.Format("{0}\t{1}\t{2}", sound.Name, filePaths, keys));
+                            for (int k = startIndex; k < sound.FilePaths.Count; k++)
+                            {
+                                filePaths += " |" + Path.GetFileName(sound.FilePaths[k]);
+                            }
+                        }
+
+                        string keys = "";
+                        if (sound.Keys.Count > 0)
+                        {
+                            keys += sound.Keys[0].ToString();
+                            for (int k = 1; k < sound.Keys.Count; k++)
+                            {
+                                keys += " + " + sound.Keys[k];
+                            }
+                        }
+
+                        IniFile.IniWriteValue(
+                            "Sounds",
+                            "Log" + (j + 1),
+                            string.Format(
+                                "{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+                                sound.Name,
+                                filePaths,
+                                keys,
+                                sound.Volume,
+                                sound.Loop,
+                                i));
+                    }
                 }
             }
         }
